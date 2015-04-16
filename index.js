@@ -2,9 +2,10 @@ const BUILD_MODE = typeof window === 'undefined'
 
 import postcss from 'postcss'
 
-export default (processor) => {
-  let sourceMap = new Map(),
-    notLoadedYet = Symbol(),
+export default (plugins) => {
+  let processor = postcss(plugins),
+    loadedSources = new Map(),
+    NOT_LOADED = Symbol(),
     linkElement,
     removeElement = (prevElem) => {
       let url = prevElem.getAttribute('href')
@@ -35,15 +36,15 @@ export default (processor) => {
     let filename = load.metadata.pluginArgument.replace(/\?.*$/, '')
     // Insert blanks into the Map so that load-order is preserved,
     // no matter when the requests come back.
-    sourceMap.set(filename, notLoadedYet)
+    loadedSources.set(filename, NOT_LOADED)
     return fetch(load).then(newSource => {
-      sourceMap.set(filename, newSource)
+      loadedSources.set(filename, newSource)
 
       let prevElem = linkElement,
         allSources = ""
 
-      for (let source of sourceMap.values()) {
-        if (source == notLoadedYet) break;
+      for (let source of loadedSources.values()) {
+        if (source == NOT_LOADED) break;
         allSources += source
       }
 
