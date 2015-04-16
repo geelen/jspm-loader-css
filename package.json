@@ -1,0 +1,8 @@
+{
+  "main": "index",
+  "registry": "jspm",
+  "version": "0.1.0",
+  "dependencies": {
+    "postcss": "npm:postcss@~4.1.5"
+  }
+}
