@@ -2,6 +2,12 @@
 
 A sort of meta-plugin for JSPM. Since [PostCSS](https://github.com/postcss/postcss) will let you use any combination of mixins, you need to wire up that combination somewhere.
 
+First, start by installing this plugin:
+
+```
+jspm install plugin-postcss=github:geelen/plugin-postcss@master
+```
+
 So, you could make a file called `css.js` in your project root, and put this in it:
 
 ```
