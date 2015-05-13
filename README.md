@@ -35,4 +35,9 @@ Under the hood, a map of source paths to content. As each new file is imported, 
 
 This means **you can define variables in one file and use them in another**. In effect, every CSS file is concatenated before processing. Just make sure to `import` things in the right order.
 
-See [amcss](https://github.com/geelen/typeslab/blob/master/src/amcss.js) in TypeSlab for an example of use.
+## In the wild
+
+- Geelen's [TypeSlab](http://typeslab.com) defines an [amcss](https://github.com/geelen/typeslab/blob/master/src/amcss.js) processor
+- MadLittleMods' [CSS Variables Playground](https://madlittlemods.github.io/postcss-css-variables/playground/) defines a [processor](https://github.com/MadLittleMods/postcss-css-variables/blob/master/playground/css.js) for mixins, nesting and CSS variables.
+
+
