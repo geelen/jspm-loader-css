@@ -6,7 +6,7 @@ export default (plugins) => {
   let processor = postcss(plugins),
     loadedSources = new Map(),
     NOT_LOADED = Symbol(),
-    linkElement,
+    cssElement,
     removeElement = (prevElem) => {
       let url = prevElem.getAttribute('href')
       prevElem.parentNode.removeChild(prevElem)
@@ -14,17 +14,22 @@ export default (plugins) => {
       //console.log(`CSS removed from URL ${url}`)
     },
     createElement = (source) => {
-      let processed = processor.process(source),
-        blob = new Blob([processed.css], {type: 'text/css'}),
-        url = URL.createObjectURL(blob),
-        head = document.getElementsByTagName('head')[0]
-
+      let head = document.getElementsByTagName('head')[0],
+        processed = processor.process(source)
       processed.warnings().forEach(w => console.warn(w.toString()))
 
-      linkElement = document.createElement('link')
-      linkElement.setAttribute('href', url)
-      linkElement.setAttribute('rel', 'stylesheet')
-      head.appendChild(linkElement)
+      if (true || !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match(/phantomjs/i)) {
+        cssElement = document.createElement('style')
+        cssElement.innerHTML = processed.css
+      } else {
+        let blob = new Blob([processed.css], {type: 'text/css'}),
+          url = URL.createObjectURL(blob)
+
+        cssElement = document.createElement('link')
+        cssElement.setAttribute('href', url)
+        cssElement.setAttribute('rel', 'stylesheet')
+      }
+      head.appendChild(cssElement)
       //console.log(`CSS of ${processed.length} bytes added as URL ${url}`)
     }
 
@@ -38,9 +43,9 @@ export default (plugins) => {
     // no matter when the requests come back.
     loadedSources.set(filename, NOT_LOADED)
     return fetch(load).then(newSource => {
-      loadedSources.set(filename, newSource)
+      loadedSources.set(filename, `/* SOURCE=${filename} */\n${newSource}\n/* SOURCE END */`)
 
-      let prevElem = linkElement,
+      let prevElem = cssElement,
         allSources = ""
 
       for (let source of loadedSources.values()) {
