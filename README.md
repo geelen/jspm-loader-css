@@ -1,1 +1,1 @@
-# SystemJS Loader: CSS
+# JSPM Loader: CSS
