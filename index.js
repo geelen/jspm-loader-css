@@ -34,10 +34,10 @@ export default (plugins) => {
     }
 
   let fetch = (load, fetch) => {
-    if (BUILD_MODE) {
-      load.metadata.format = 'defined';
-      return ''
-    }
+    //if (BUILD_MODE) {
+    //  load.metadata.format = 'defined';
+    //  return ''
+    //}
     let filename = load.metadata.pluginArgument.replace(/\?.*$/, '')
     // Insert blanks into the Map so that load-order is preserved,
     // no matter when the requests come back.
