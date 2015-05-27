@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/geelen/systemjs-loader-css/issues"
   },
-  "homepage": "https://github.com/geelen/systemjs-loader-css"
+  "homepage": "https://github.com/geelen/systemjs-loader-css",
+  "dependencies": {
+    "postcss": "^4.1.11"
+  }
 }
