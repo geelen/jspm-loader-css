@@ -1,29 +1,31 @@
 {
-  "name": "systemjs-loader-css",
+  "name": "jspm-loader-css",
+  "main": "index",
+  "registry": "jspm",
   "version": "0.0.1",
-  "description": "Flexible, PostCSS-based SystemJS loader for CSS",
-  "main": "index.js",
+  "description": "A CSS loader for JSPM. Install",
+  "dependencies": {
+    "css-modules-loader-core": "^0.0.3",
+    "path": "^0.11.14"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/geelen/systemjs-loader-css.git"
+    "url": "https://github.com/geelen/jspm-loader-css.git"
   },
   "keywords": [
-    "systemjs",
-    "postcss",
+    "jspm",
     "css",
-    "loader",
-    "jspm"
+    "css-modules",
+    "loader"
   ],
   "author": "Glen Maddern",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/geelen/systemjs-loader-css/issues"
+    "url": "https://github.com/geelen/jspm-loader-css/issues"
   },
-  "homepage": "https://github.com/geelen/systemjs-loader-css",
-  "dependencies": {
-    "postcss": "^4.1.11"
-  }
+  "homepage": "https://github.com/geelen/jspm-loader-css",
 }

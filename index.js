@@ -1,104 +1,57 @@
-const BUILD_MODE = typeof window === 'undefined'
+import Core from 'css-modules-loader-core'
+import path from 'path'
 
-import postcss from 'postcss'
+class CSSLoader {
+  constructor(plugins) {
+    this.fetch = this.fetch.bind(this)
+    if (plugins) Core.plugins = plugins
+  }
 
-/*
- * - fetch calls come in 1 by 1
- * - go and get the source
- * - run through pipeline as soon as it comes back
- * - look for @imports & :import statements
- * - resolve imports, rewrite usages, update exports
- * - merge files into a single CSS unit
- * - export JS metadata as well
- * */
-
-
-
-export default ( plugins ) => {
-  let processor = postcss( plugins ),
-    loadedSources = new Map(),
-    NOT_LOADED = Symbol(),
-    cssElement,
-    removeElement = prevElem => {
-      let url = prevElem.getAttribute( 'href' )
-      prevElem.parentNode.removeChild( prevElem )
-      URL.revokeObjectURL( url )
-      //console.log(`CSS removed from URL ${url}`)
-    },
-    createElement = source => {
-      let head = document.getElementsByTagName( 'head' )[0],
-        processed = processor.process( source )
-      processed.warnings().forEach( w => console.warn( w.toString() ) )
-
-      if ( true || !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match( /phantomjs/i ) ) {
-        cssElement = document.createElement( 'style' )
-        cssElement.innerHTML = processed.css
-      } else {
-        let blob = new Blob( [processed.css], { type: 'text/css' } ),
-          url = URL.createObjectURL( blob )
-
-        cssElement = document.createElement( 'link' )
-        cssElement.setAttribute( 'href', url )
-        cssElement.setAttribute( 'rel', 'stylesheet' )
-      }
-      head.appendChild( cssElement )
-      //console.log(`CSS of ${processed.length} bytes added as URL ${url}`)
-    }
-
-  let fetch = ( load, fetch ) => {
-    //if (BUILD_MODE) {
-    //  load.metadata.format = 'defined';
-    //  return ''
-    //}
-    let filename = load.metadata.pluginArgument.replace( /\?.*$/, '' )
-    // Insert blanks into the Map so that load-order is preserved,
-    // no matter when the requests come back.
-    loadedSources.set( filename, NOT_LOADED )
-    return fetch( load ).then( newSource => {
-      loadedSources.set( filename, `/* SOURCE=${filename} */\n${newSource}\n/* SOURCE END */` )
-
-      let prevElem = cssElement,
-        allSources = ""
-
-      for ( let source of loadedSources.values() ) {
-        if ( source == NOT_LOADED ) break;
-        allSources += source
-      }
-
-      createElement( allSources )
-      if ( prevElem ) removeElement( prevElem )
-
-      return ""
+  fetch( load, fetch ) {
+    // Use the default Load to fetch the source
+    return fetch( load ).then( source => {
+      // Pass this to the CSS Modules core to be translated
+      // triggerImport is how dependencies are resolved
+      return Core.load( source, load.metadata.pluginArgument, "A", this.triggerImport )
+    } ).then( ( { injectableSource, exportTokens } ) => {
+      // Once our dependencies are resolved, inject ourselves
+      this.createElement( injectableSource )
+      // And return out exported variables
+      return `module.exports = ${JSON.stringify( exportTokens )}`
     } )
   }
 
-  let hotReload = ( module ) => {
-    // noop, the fetch already injected the new CSS
+// Uses a <link> with a Blob URL if that API is available, since that
+// has a preferable debugging experience. Falls back to a simple <style>
+// tag if not.
+  createElement(source) {
+    let head = document.getElementsByTagName( 'head' )[0],
+      cssElement
+
+    if ( !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match( /phantomjs/i ) ) {
+      cssElement = document.createElement( 'style' )
+      cssElement.innerHTML = source
+    } else {
+      let blob = new Blob( [source], { type: 'text/css' } ),
+        url = URL.createObjectURL( blob )
+
+      cssElement = document.createElement( 'link' )
+      cssElement.setAttribute( 'href', url )
+      cssElement.setAttribute( 'rel', 'stylesheet' )
+    }
+    head.appendChild( cssElement )
   }
 
-  let escape = ( source ) => {
-      return source
-        .replace( /(["\\])/g, '\\$1' )
-        .replace( /[\f]/g, "\\f" )
-        .replace( /[\b]/g, "\\b" )
-        .replace( /[\n]/g, "\\n" )
-        .replace( /[\t]/g, "\\t" )
-        .replace( /[\r]/g, "\\r" )
-        .replace( /[\u2028]/g, "\\u2028" )
-        .replace( /[\u2029]/g, "\\u2029" );
-    },
-    cssInject = "(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})";
-
-  let bundle = ( loads, opts ) => {
-    let fs = require( 'fs' );
-    let stubDefines = loads.map( load => {
-        return "System\.register('" + load.name + "', [], false, function() {});";
-      } ).join( '\n' ),
-      inputFiles = loads.map( l => l.address.replace( /^file:/, '' ) ),
-      inputCSS = inputFiles.map( f => fs.readFileSync( f ).toString() ).join( "\n" )
-
-    return [stubDefines, cssInject, '("' + escape( processor.process( inputCSS ).css ) + '");'].join( '\n' );
+// Figure out the path that System will need to find the right file,
+// and trigger the import (which will instantiate this loader once more)
+  triggerImport( _newPath, relativeTo, trace ) {
+    let newPath = _newPath.replace( /^["']|["']$/g, "" ),
+      rootRelativePath = "." + path.resolve( path.dirname( relativeTo ), newPath )
+    return System.import( `${rootRelativePath}!${__moduleName}` )
   }
-
-  return { fetch, hotReload, bundle }
 }
+
+export default new CSSLoader([
+  Core.extractImports,
+  Core.scope
+])
