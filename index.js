@@ -51,6 +51,7 @@ class CSSLoader {
   }
 }
 
+export {CSSLoader,Core}
 export default new CSSLoader([
   Core.extractImports,
   Core.scope
