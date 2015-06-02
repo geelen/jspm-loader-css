@@ -14,7 +14,7 @@ Load the styles by referencing them in your JS:
 import from './styles.css!'
 ```
 
-## `:local`
+## :local mode
 
 The default CSS loader supports opt-in CSS Modules syntax. So, importing the following CSS file:
 
@@ -37,6 +37,6 @@ elem.innerHTML = `<div class="${styles.myComponent}"></div>`
 
 For the full CSS Modules syntax, where everything is local by default, see the [JSPM CSS Modules Loader](https://github.com/geelen/jspm-loader-css-modules) project.
 
-## `:export` `:import`
+## :export & :import
 
 The loader also supports the CSS Modules Interchange Format. 
