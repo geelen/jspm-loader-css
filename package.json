@@ -2,10 +2,10 @@
   "name": "jspm-loader-css",
   "main": "index",
   "format": "es6",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A CSS loader for JSPM. Install",
   "dependencies": {
-    "css-modules-loader-core": "^0.0.3",
+    "css-modules-loader-core": "^0.0.6",
     "path": "^0.11.14"
   },
   "devDependencies": {},
