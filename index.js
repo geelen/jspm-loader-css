@@ -2,9 +2,10 @@ import Core from 'css-modules-loader-core'
 import path from 'path'
 
 class CSSLoader {
-  constructor(plugins) {
+  constructor(plugins, moduleName) {
     this.fetch = this.fetch.bind(this)
-    if (plugins) Core.plugins = plugins
+    this.moduleName = moduleName || __moduleName
+    this.core = new Core(plugins)
   }
 
   fetch( load, fetch ) {
@@ -12,7 +13,7 @@ class CSSLoader {
     return fetch( load ).then( source => {
       // Pass this to the CSS Modules core to be translated
       // triggerImport is how dependencies are resolved
-      return Core.load( source, load.metadata.pluginArgument, "A", this.triggerImport )
+      return this.core.load( source, load.metadata.pluginArgument, "A", this.triggerImport.bind(this) )
     } ).then( ( { injectableSource, exportTokens } ) => {
       // Once our dependencies are resolved, inject ourselves
       this.createElement( injectableSource )
@@ -47,7 +48,7 @@ class CSSLoader {
   triggerImport( _newPath, relativeTo, trace ) {
     let newPath = _newPath.replace( /^["']|["']$/g, "" ),
       rootRelativePath = "." + path.resolve( path.dirname( relativeTo ), newPath )
-    return System.import( `${rootRelativePath}!${__moduleName}` )
+    return System.import( `${rootRelativePath}!${this.moduleName}` )
   }
 }
 
