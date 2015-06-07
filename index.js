@@ -1,3 +1,4 @@
+const BUILD_MODE = typeof window === 'undefined'
 import Core from 'css-modules-loader-core'
 import path from 'path'
 
@@ -9,6 +10,10 @@ class CSSLoader {
   }
 
   fetch( load, fetch ) {
+    if (BUILD_MODE) {
+      load.metadata.format = 'defined';
+      return ''
+    }
     // Use the default Load to fetch the source
     return fetch( load ).then( source => {
       // Pass this to the CSS Modules core to be translated
