@@ -1,6 +1,8 @@
 import Core from 'css-modules-loader-core'
 import path from 'path'
 
+import Autoprefixer from 'vendor/autoprefixer.js'
+
 class CSSLoader {
   constructor(plugins) {
     this.fetch = this.fetch.bind(this)
