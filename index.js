@@ -7,7 +7,6 @@ class CSSLoader {
     this.fetch = this.fetch.bind( this )
     this.moduleName = moduleName || __moduleName
     this.core = new Core( plugins )
-    this._cache = {}
   }
 
   fetch( load, fetch ) {
