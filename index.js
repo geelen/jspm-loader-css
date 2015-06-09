@@ -19,7 +19,6 @@ class CSSLoader {
       // triggerImport is how dependencies are resolved
       return this.core.load( source, load.metadata.pluginArgument, "A", this.triggerImport.bind( this ) )
     } ).then( ( { injectableSource, exportTokens } ) => {
-      console.log( { injectableSource, exportTokens } )
       if ( BUILD_MODE ) {
         this._cache["./" + load.metadata.pluginArgument] = exportTokens
         this._cache._source.push( injectableSource )
