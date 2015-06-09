@@ -26,7 +26,7 @@ class CSSLoader {
         this.createElement( injectableSource )
       }
       // And return out exported variables
-      return `module.exports = ${JSON.stringify( exportTokens )}`
+      return `export default ${JSON.stringify( exportTokens )}`
     } )
   }
 
@@ -59,7 +59,7 @@ class CSSLoader {
     return System.import( `${rootRelativePath}!${this.moduleName}` ).then( exportedTokens => {
       // If we're in BUILD_MODE, the tokens aren't actually returned,
       // but they have been added into our cache.
-      return BUILD_MODE ? this._cache[rootRelativePath] : exportedTokens
+      return BUILD_MODE ? this._cache[rootRelativePath] : exportedTokens.default
     } )
   }
 
