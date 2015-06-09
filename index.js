@@ -3,25 +3,24 @@ import Core from 'css-modules-loader-core'
 import path from 'path'
 
 class CSSLoader {
-  constructor(plugins, moduleName) {
-    this.fetch = this.fetch.bind(this)
+  constructor( plugins, moduleName ) {
+    this.fetch = this.fetch.bind( this )
     this.moduleName = moduleName || __moduleName
-    this.core = new Core(plugins)
+    this.core = new Core( plugins )
+    this._cache = {}
   }
 
   fetch( load, fetch ) {
-    if (BUILD_MODE) {
-      load.metadata.format = 'defined';
-      return ''
-    }
     // Use the default Load to fetch the source
     return fetch( load ).then( source => {
       // Pass this to the CSS Modules core to be translated
       // triggerImport is how dependencies are resolved
-      return this.core.load( source, load.metadata.pluginArgument, "A", this.triggerImport.bind(this) )
+      return this.core.load( source, load.metadata.pluginArgument, "A", this.triggerImport.bind( this ) )
     } ).then( ( { injectableSource, exportTokens } ) => {
-      // Once our dependencies are resolved, inject ourselves
-      this.createElement( injectableSource )
+      if ( !BUILD_MODE ) {
+        // Once our dependencies are resolved, inject ourselves
+        this.createElement( injectableSource )
+      }
       // And return out exported variables
       return `module.exports = ${JSON.stringify( exportTokens )}`
     } )
@@ -30,7 +29,7 @@ class CSSLoader {
 // Uses a <link> with a Blob URL if that API is available, since that
 // has a preferable debugging experience. Falls back to a simple <style>
 // tag if not.
-  createElement(source) {
+  createElement( source ) {
     let head = document.getElementsByTagName( 'head' )[0],
       cssElement
 
@@ -53,12 +52,17 @@ class CSSLoader {
   triggerImport( _newPath, relativeTo, trace ) {
     let newPath = _newPath.replace( /^["']|["']$/g, "" ),
       rootRelativePath = "." + path.resolve( path.dirname( relativeTo ), newPath )
-    return System.import( `${rootRelativePath}!${this.moduleName}` )
+    console.log( `Importing ${newPath}` )
+    return System.import( `${rootRelativePath}!${this.moduleName}` ).then( exportedTokens => {
+      console.log( `Imported ${newPath}` )
+      console.log( exportedTokens )
+      return exportedTokens
+    } )
   }
 }
 
 export {CSSLoader,Core}
-export default new CSSLoader([
+export default new CSSLoader( [
   Core.extractImports,
   Core.scope
-])
+] )
