@@ -2,6 +2,7 @@ const BUILD_MODE = typeof window === 'undefined'
 import Core from 'css-modules-loader-core'
 import path from 'path'
 
+let numElems = 0
 class CSSLoader {
   constructor( plugins, moduleName ) {
     this.fetch = this.fetch.bind( this )
@@ -18,15 +19,17 @@ class CSSLoader {
       // triggerImport is how dependencies are resolved
       return this.core.load( source, load.metadata.pluginArgument, "A", this.triggerImport.bind( this ) )
     } ).then( ( { injectableSource, exportTokens } ) => {
+      console.log( { injectableSource, exportTokens } )
       if ( BUILD_MODE ) {
         this._cache["./" + load.metadata.pluginArgument] = exportTokens
         this._cache._source.push( injectableSource )
+        return `export default ${JSON.stringify( exportTokens )}`
       } else {
         // Once our dependencies are resolved, inject ourselves
-        this.createElement( injectableSource )
+        let id = this.createElement( injectableSource )
+        return `export let __hotReload = () => document.getElementById('${id}').remove(); export default ${JSON.stringify( exportTokens )}`
       }
       // And return out exported variables
-      return `export default ${JSON.stringify( exportTokens )}`
     } )
   }
 
@@ -48,7 +51,10 @@ class CSSLoader {
       cssElement.setAttribute( 'href', url )
       cssElement.setAttribute( 'rel', 'stylesheet' )
     }
+    let id = `jspm-css-loader-${numElems++}`
+    cssElement.setAttribute( 'id', id )
     head.appendChild( cssElement )
+    return id
   }
 
   triggerImport( _newPath, relativeTo, trace ) {
