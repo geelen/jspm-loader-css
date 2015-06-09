@@ -26,7 +26,7 @@ class CSSLoader {
       } else {
         // Once our dependencies are resolved, inject ourselves
         let id = this.createElement( injectableSource )
-        return `export let __hotReload = () => document.getElementById('${id}').remove(); export default ${JSON.stringify( exportTokens )}`
+        return `export let __hotReload = () => {document.getElementById('${id}').remove(); return true;}; export default ${JSON.stringify( exportTokens )}`
       }
       // And return out exported variables
     } )
