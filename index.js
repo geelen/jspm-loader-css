@@ -30,7 +30,8 @@ class CSSLoader {
         this.createElement( injectableSource, path )
         // And return out exported variables.
         let imports = deps.map( d => `import "${d}"` ).join( ";" ),
-          hotReloader = `export let __hotReload = true`,
+          // on a reload, the only thing we need to do is cause a repaint
+          hotReloader = `export let __hotReload = () => document.body.offsetHeight && true`,
           exports = `export default ${JSON.stringify( exportTokens )}`
         return [imports, hotReloader, exports].join( ";" )
       }
