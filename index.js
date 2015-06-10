@@ -2,7 +2,6 @@ const BUILD_MODE = typeof window === 'undefined'
 import Core from 'css-modules-loader-core'
 import path from 'path'
 
-let numElems = 0
 class CSSLoader {
   constructor( plugins, moduleName ) {
     this.fetch = this.fetch.bind( this )
