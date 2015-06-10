@@ -10,9 +10,11 @@ class CSSLoader {
     this.moduleName = moduleName || __moduleName
     this.core = new Core( plugins )
     this._cache = { _source: [] }
+    this._deps = {}
   }
 
   fetch( load, fetch ) {
+    let deps = this._deps[load.metadata.pluginArgument] = []
     // Use the default Load to fetch the source
     return fetch( load ).then( source => {
       // Pass this to the CSS Modules core to be translated
@@ -25,10 +27,13 @@ class CSSLoader {
         return `export default ${JSON.stringify( exportTokens )}`
       } else {
         // Once our dependencies are resolved, inject ourselves
-        let id = this.createElement( injectableSource )
-        return `export let __hotReload = () => {document.getElementById('${id}').remove(); return true;}; export default ${JSON.stringify( exportTokens )}`
+        // And return out exported variables.
+        let id = this.createElement( injectableSource ),
+          imports = deps.map(d => `import "${d}"`).join(";"),
+          hotReloader = `export let __hotReload = () => {document.getElementById('${id}').remove(); return true;};`,
+          exports = `export default ${JSON.stringify( exportTokens )}`
+        return [imports, hotReloader, exports].join(";")
       }
-      // And return out exported variables
     } )
   }
 
@@ -61,6 +66,7 @@ class CSSLoader {
     // and trigger the import (which will instantiate this loader once more)
     let newPath = _newPath.replace( /^["']|["']$/g, "" ),
       rootRelativePath = "." + path.resolve( path.dirname( relativeTo ), newPath )
+    this._deps[relativeTo.replace(/^\//,'')].push(`${newPath}!${this.moduleName}`)
     return System.import( `${rootRelativePath}!${this.moduleName}` ).then( exportedTokens => {
       // If we're in BUILD_MODE, the tokens aren't actually returned,
       // but they have been added into our cache.
@@ -69,7 +75,6 @@ class CSSLoader {
   }
 
   bundle( loads, opts ) {
-    console.log( loads, opts )
     let css = this._cache._source.join( "\n" )
       .replace( /(["\\])/g, '\\$1' )
       .replace( /[\f]/g, "\\f" )
