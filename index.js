@@ -1,6 +1,7 @@
 const BUILD_MODE = typeof window === 'undefined'
 import Core from 'css-modules-loader-core'
 import path from 'path'
+let _source = []
 
 class CSSLoader {
   constructor( plugins, moduleName ) {
@@ -8,7 +9,7 @@ class CSSLoader {
     this.bundle = this.bundle.bind( this )
     this.moduleName = moduleName || __moduleName
     this.core = new Core( plugins )
-    this._cache = { _source: [] }
+    this._cache = { _source }
     this._deps = {}
   }
 
@@ -23,7 +24,7 @@ class CSSLoader {
     } ).then( ( { injectableSource, exportTokens } ) => {
       if ( BUILD_MODE ) {
         this._cache["./" + path] = exportTokens
-        this._cache._source.push( injectableSource )
+        _source.push( injectableSource )
         return `export default ${JSON.stringify( exportTokens )}`
       } else {
         // Once our dependencies are resolved, inject ourselves
