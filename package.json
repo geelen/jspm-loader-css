@@ -5,7 +5,7 @@
   "version": "0.1.1",
   "description": "A CSS loader for JSPM. Install",
   "dependencies": {
-    "css-modules-loader-core": "^0.0.7",
+    "css-modules-loader-core": "^0.0.9",
     "path": "^0.11.14"
   },
   "devDependencies": {},
