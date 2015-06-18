@@ -1,6 +1,7 @@
 const BUILD_MODE = typeof window === 'undefined'
 import Core from 'css-modules-loader-core'
 import path from 'path'
+import autoprefixer from './autoprefixer'
 let _source = []
 
 class CSSLoader {
@@ -31,7 +32,7 @@ class CSSLoader {
         this.createElement( injectableSource, path )
         // And return out exported variables.
         let imports = deps.map( d => `import "${d}"` ).join( ";" ),
-          // on a reload, the only thing we need to do is cause a repaint
+        // on a reload, the only thing we need to do is cause a repaint
           hotReloader = `export let __hotReload = () => document.body.offsetHeight && true`,
           exports = `export default ${JSON.stringify( exportTokens )}`
         return [imports, hotReloader, exports].join( ";" )
@@ -45,18 +46,18 @@ class CSSLoader {
   createElement( source, path ) {
     let head = document.getElementsByTagName( 'head' )[0],
       id = `jspm-css-loader-${path}`,
-      cssElement = document.getElementById(id)
+      cssElement = document.getElementById( id )
 
     // If we don't support Blob URLs, use a <style> tag
     if ( !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match( /phantomjs/i ) ) {
-      if (!cssElement) {
+      if ( !cssElement ) {
         cssElement = document.createElement( 'style' )
         cssElement.setAttribute( 'id', id )
         head.appendChild( cssElement )
       }
       cssElement.innerHTML = source
     } else {
-      if (!cssElement) {
+      if ( !cssElement ) {
         cssElement = document.createElement( 'link' )
         cssElement.setAttribute( 'id', id )
         cssElement.setAttribute( 'rel', 'stylesheet' )
@@ -100,8 +101,15 @@ class CSSLoader {
   }
 }
 
-export {CSSLoader,Core}
+let Plugins = {
+  localByDefault: Core.localByDefault,
+  extractImports: Core.extractImports,
+  scope: Core.scope,
+  autoprefixer
+}
+export { CSSLoader,Plugins }
 export default new CSSLoader( [
-  Core.extractImports,
-  Core.scope
+  Plugins.extractImports,
+  Plugins.scope,
+  Plugins.autoprefixer()
 ] )
