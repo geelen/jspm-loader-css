@@ -1,3 +1,4 @@
+"format global";
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.autoprefixer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
   var add, crispedges, feature, flexbox, gradients, logicalProps, prefix, resolution, result, sort,
@@ -6779,7 +6780,7 @@ module.exports={
   },
   "notes":"Note that both the `border-style` and `border-width` must be specified (not set to `none` or 0) for border-images to work according to spec, though older implementations may not have this requirement. Partial support refers to supporting the shorthand syntax, but not the individual properties (border-image-source, border-image-slice, etc). ",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":83.93,
   "usage_perc_a":7.81,
@@ -7568,7 +7569,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS"
@@ -7804,7 +7805,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -8527,7 +8528,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS"
@@ -8768,7 +8769,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS",
@@ -9011,7 +9012,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -9247,7 +9248,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -9451,7 +9452,7 @@ module.exports={
   },
   "notes":"Chrome and Android 4.0 Browser support \"-webkit-hyphens: none\", but not the \"auto\" property. It is [advisable to set the @lang attribute](http://blog.adrianroselli.com/2015/01/on-use-of-lang-attribute.html) on the HTML element to enable hyphenation support and improve accessibility.",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":30.17,
   "usage_perc_a":5.59,
@@ -9483,7 +9484,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS",
@@ -9721,7 +9722,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS"
@@ -10196,7 +10197,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS"
@@ -10634,7 +10635,7 @@ module.exports={
   },
   "notes":"",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":75.4,
   "usage_perc_a":0,
@@ -10666,7 +10667,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -11148,7 +11149,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -11609,7 +11610,7 @@ module.exports={
   },
   "notes":"Support listed is for `transition` properties as well as the `transitionend` event. The prefixed name in WebKit browsers is `webkitTransitionEnd`",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":89.38,
   "usage_perc_a":0,
@@ -11870,7 +11871,7 @@ module.exports={
   },
   "notes":"",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":97.06,
   "usage_perc_a":0,
@@ -11894,7 +11895,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -12098,7 +12099,7 @@ module.exports={
   },
   "notes":"Chrome, Safari and Firefox also support the unofficial `grab` and `grabbing` values (with prefix)",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":46.99,
   "usage_perc_a":0,
@@ -13143,7 +13144,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -13605,7 +13606,7 @@ module.exports={
   },
   "notes":"Partial support refers to not supporting the `break-before`, `break-after`, `break-inside` properties. Webkit browsers do have equivalent support for the non-standard `-webkit-column-break-*` properties while Firefox supports `page-break-*` to accomplish the same result (but only the `auto` and `always' values).",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":13.56,
   "usage_perc_a":79.72,
@@ -13637,7 +13638,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -13877,7 +13878,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "DOM",
@@ -14082,7 +14083,7 @@ module.exports={
   },
   "notes":"Partial support in IE10 refers the lack of pointerenter and pointerleave events. Firefox Nightly provides 'dom.w3c_pointer_events.enabled' option to support this specification starting with version 28.",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":8.07,
   "usage_perc_a":1.51,
@@ -14118,7 +14119,7 @@ module.exports={
     }
   ],
   "bugs":[
-    
+
   ],
   "categories":[
     "CSS3"
@@ -14809,7 +14810,7 @@ module.exports={
   },
   "notes":"",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":97.03,
   "usage_perc_a":0,
@@ -15042,7 +15043,7 @@ module.exports={
   },
   "notes":"",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":13.83,
   "usage_perc_a":0,
@@ -15305,7 +15306,7 @@ module.exports={
   },
   "notes":"The scale transform can be emulated in IE < 9 using Microsoft's \"zoom\" extension, others are (not easily) possible using the MS Matrix filter",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":90.96,
   "usage_perc_a":0,
@@ -15802,7 +15803,7 @@ module.exports={
   },
   "notes":"Currently the user-select property does not appear in any W3C specification. Support information here is only for \"none\" value, not others.",
   "notes_by_num":{
-    
+
   },
   "usage_perc_y":89.26,
   "usage_perc_a":0,
