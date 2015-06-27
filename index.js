@@ -19,16 +19,16 @@ class CSSLoader {
   fetch( load, fetch ) {
     let path = load.metadata.pluginArgument,
       deps = this._deps[path] = [],
-      elem = this.getElement( `jspm-css-loader-${path}` )
+      elem = this.getElement( path )
     console.log( `Fetch: ${path}` )
     // Use the default Load to fetch the source
     return fetch( load ).then( source => {
       // Pass this to the CSS Modules core to be translated
       // triggerImport is how dependencies are resolved
-      return this.core.load( source, path, elem, this.triggerImport.bind( this ) )
+      return this.core.load( source, path, "", this.triggerImport.bind( this ) )
     } ).then( ( { injectableSource, exportTokens } ) => {
       if ( BUILD_MODE ) {
-        this._cache["./" + path] = exportTokens
+        this._cache[path] = exportTokens
         _source.push( injectableSource ) //TODO: ordering!
         return `export default ${JSON.stringify( exportTokens )}`
       } else {
@@ -59,13 +59,15 @@ class CSSLoader {
     }
   }
 
-  getElement( id ) {
+  getElement( path, beforeElem ) {
+    console.log(`Get element ${path} ${beforeElem}`)
     if ( !BUILD_MODE ) {
-      return document.getElementById( id ) || this.createElement( id )
+      let id = `jspm-css-loader-${path}`
+      return document.getElementById( id ) || this.createElement( id, beforeElem )
     }
   }
 
-  createElement( id ) {
+  createElement( id, beforeElem ) {
     let head = document.getElementsByTagName( 'head' )[0],
       cssElement = document.getElementById( id )
     if ( cssElement ) console.warn( "WHAT!!" )
@@ -73,30 +75,33 @@ class CSSLoader {
 
     if ( USE_STYLE_TAGS ) {
       cssElement = document.createElement( 'style' )
-      cssElement.setAttribute( 'id', id )
-      head.appendChild( cssElement )
     } else {
       cssElement = document.createElement( 'link' )
-      cssElement.setAttribute( 'id', id )
       cssElement.setAttribute( 'rel', 'stylesheet' )
-      head.appendChild( cssElement )
     }
+    cssElement.setAttribute( 'id', id )
+    console.log(beforeElem)
+    if (beforeElem) console.log(this.getElement( beforeElem ))
+    head.insertBefore( cssElement, beforeElem ? this.getElement( beforeElem ) : null )
 
     return cssElement
   }
 
-  triggerImport( _newPath, relativeTo, trace ) {
+  triggerImport( _newPath, relativeTo ) {
     // Figure out the path that System will need to find the right file,
     // and trigger the import (which will instantiate this loader once more)
     let newPath = _newPath.replace( /^["']|["']$/g, "" ),
-      rootRelativePath = "." + path.resolve( path.dirname( relativeTo ), newPath )
-    this._deps[relativeTo.replace( /^\//, '' )].push( `${newPath}!${this.moduleName}` )
+      canonicalPath = path.resolve( path.dirname( relativeTo ), newPath ).replace( /^\//, '' ),
+      canonicalParent = relativeTo.replace( /^\//, '' )
+    this._deps[canonicalParent].push( `${newPath}!${this.moduleName}` )
 
-    console.log( `Imports: ${relativeTo} imports ${rootRelativePath}` )
-    return System.import( `${rootRelativePath}!${this.moduleName}` ).then( exportedTokens => {
+    this.getElement( canonicalPath, canonicalParent )
+    console.log( `Imports: ${relativeTo} imports ${canonicalPath}` )
+
+    return System.import( `./${canonicalPath}!${this.moduleName}` ).then( exportedTokens => {
       // If we're in BUILD_MODE, the tokens aren't actually returned,
       // but they have been added into our cache.
-      return BUILD_MODE ? this._cache[rootRelativePath] : exportedTokens.default
+      return BUILD_MODE ? this._cache[canonicalPath] : exportedTokens.default
     } )
   }
 
