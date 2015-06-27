@@ -18,7 +18,6 @@ class CSSLoader {
   fetch( load, fetch ) {
     let path = load.metadata.pluginArgument,
       deps = this._deps[path] = []
-    console.log( `Fetch: ${path}` )
     // Create the element for this file if it isn't already
     // to ensure the correct order of output
     let elem = this.getElement( path )
@@ -48,7 +47,7 @@ class CSSLoader {
 // has a preferable debugging experience. Falls back to a simple <style>
 // tag if not.
   inject( source, elem ) {
-    if ( BUILD_MODE) {
+    if ( BUILD_MODE ) {
       elem.source = source
     } else if ( USE_STYLE_TAGS ) {
       elem.innerHTML = source
@@ -63,8 +62,6 @@ class CSSLoader {
   }
 
   getElement( path, beforeElem ) {
-    console.log(path)
-    console.log(this._cache)
     if ( !BUILD_MODE ) {
       let id = `jspm-css-loader-${path}`
       return document.getElementById( id ) || this.createElement( id, beforeElem )
@@ -78,7 +75,6 @@ class CSSLoader {
     let head = document.getElementsByTagName( 'head' )[0],
       cssElement = document.getElementById( id )
     if ( cssElement ) console.warn( "WHAT!!" )
-    console.log( `Create: ${id}` )
 
     if ( USE_STYLE_TAGS ) {
       cssElement = document.createElement( 'style' )
@@ -113,7 +109,6 @@ class CSSLoader {
     // This ensures elements are created in the right order:
     // dependencies before parents, siblings in source-order
     let elem = this.getElement( canonicalPath, canonicalParent )
-    console.log( `Imports: ${relativeTo} -> ${canonicalPath}` )
 
     return System.import( `./${canonicalPath}!${this.moduleName}` ).then( exportedTokens => {
       // If we're in BUILD_MODE, the tokens aren't actually returned,
@@ -122,9 +117,12 @@ class CSSLoader {
     } )
   }
 
-  bundle( loads, opts ) {
-    console.log(this._cache)
-    let css = this._cache.map( c => c.source ).join( "\n" )
+  bundle() {
+    return `(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})("${this.getAllSources()}");`
+  }
+
+  getAllSources() {
+    return this._cache.map( c => c.source ).join( "\n" )
       .replace( /(["\\])/g, '\\$1' )
       .replace( /[\f]/g, "\\f" )
       .replace( /[\b]/g, "\\b" )
@@ -132,8 +130,7 @@ class CSSLoader {
       .replace( /[\t]/g, "\\t" )
       .replace( /[\r]/g, "\\r" )
       .replace( /[\u2028]/g, "\\u2028" )
-      .replace( /[\u2029]/g, "\\u2029" );
-    return `(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})("${css}");`
+      .replace( /[\u2029]/g, "\\u2029" )
   }
 }
 
