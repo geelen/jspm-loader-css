@@ -40,3 +40,35 @@ For the full CSS Modules syntax, where everything is local by default, see the [
 ## :export & :import
 
 The loader also supports the CSS Modules Interchange Format. 
+
+## Customize your own loader
+
+You can customize this loader to meet your needs.
+
+1. Create a `css.js` file under your project folder next to `config.js` file.
+2. In the `css.js` file, include whatever postcss plugins you need:
+
+    ```
+	import { CSSLoader, Plugins } from 'jspm-loader-css'
+	import vars from 'postcss-simple-vars' // you want to use this postcss plugin
+	
+	export default new CSSLoader([
+		vars,
+		Plugins.autoprefixer()
+	], __moduleName)
+	``` 
+	Just make sure you have `Plugins.autoprefixer` passed to `new CSSLoader`, it's required.
+3. If you have had `jspm-loader-css` installed with `jspm install css=npm:jspm-loader-css`, then run `jspm install npm:jspm-loader-css`, it will replace the line in `config.js`
+    
+	```
+	"css": "npm:jspm-loader-css@x.x.x"
+	```
+	with:
+	```
+	"jspm-loader-css": "npm:jspm-loader-css@x.x.x"
+	```
+	
+	Of course you can also edit the `config.js` file without installing jspm-loader-css again.
+	
+You can also check [an example css.js file here](https://github.com/geelen/glenmaddern.com/blob/master/src/css.js "Customize your own jspm css loader").
+	
