@@ -1,8 +1,10 @@
-const BUILD_MODE = typeof window === 'undefined'
 import Core from 'css-modules-loader-core'
 import path from 'path'
 import autoprefixer from './autoprefixer'
 let _source = []
+
+const BUILD_MODE = typeof window === 'undefined'
+const USE_STYLE_TAGS = BUILD_MODE || !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match( /phantomjs/i )
 
 class CSSLoader {
   constructor( plugins, moduleName ) {
@@ -16,20 +18,21 @@ class CSSLoader {
 
   fetch( load, fetch ) {
     let path = load.metadata.pluginArgument,
-      deps = this._deps[path] = []
+      deps = this._deps[path] = [],
+      elem = this.getElement( `jspm-css-loader-${path}` )
+    console.log( `Fetch: ${path}` )
     // Use the default Load to fetch the source
     return fetch( load ).then( source => {
       // Pass this to the CSS Modules core to be translated
       // triggerImport is how dependencies are resolved
-      return this.core.load( source, path, "A", this.triggerImport.bind( this ) )
+      return this.core.load( source, path, elem, this.triggerImport.bind( this ) )
     } ).then( ( { injectableSource, exportTokens } ) => {
       if ( BUILD_MODE ) {
         this._cache["./" + path] = exportTokens
-        _source.push( injectableSource )
+        _source.push( injectableSource ) //TODO: ordering!
         return `export default ${JSON.stringify( exportTokens )}`
       } else {
-        // Once our dependencies are resolved, inject ourselves
-        this.createElement( injectableSource, path )
+        this.inject( injectableSource, elem )
         // And return out exported variables.
         let imports = deps.map( d => `import "${d}"` ).join( ";" ),
         // on a reload, the only thing we need to do is cause a repaint
@@ -43,35 +46,43 @@ class CSSLoader {
 // Uses a <link> with a Blob URL if that API is available, since that
 // has a preferable debugging experience. Falls back to a simple <style>
 // tag if not.
-  createElement( source, path ) {
-    let head = document.getElementsByTagName( 'head' )[0],
-      id = `jspm-css-loader-${path}`,
-      cssElement = document.getElementById( id )
-
-    // If we don't support Blob URLs, use a <style> tag
-    if ( !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match( /phantomjs/i ) ) {
-      if ( !cssElement ) {
-        cssElement = document.createElement( 'style' )
-        cssElement.setAttribute( 'id', id )
-        head.appendChild( cssElement )
-      }
+  inject( source, cssElement ) {
+    if ( USE_STYLE_TAGS ) {
       cssElement.innerHTML = source
     } else {
-      if ( !cssElement ) {
-        cssElement = document.createElement( 'link' )
-        cssElement.setAttribute( 'id', id )
-        cssElement.setAttribute( 'rel', 'stylesheet' )
-        head.appendChild( cssElement )
-      } else {
-        URL.revokeObjectURL( cssElement.getAttribute( 'href' ) )
-      }
-      let blob = new Blob( [source], { type: 'text/css' } ),
+      let oldHref = cssElement.getAttribute( 'href' ),
+        blob = new Blob( [source], { type: 'text/css' } ),
         url = URL.createObjectURL( blob )
 
       cssElement.setAttribute( 'href', url )
+      if ( oldHref ) URL.revokeObjectURL( oldHref )
+    }
+  }
+
+  getElement( id ) {
+    if ( !BUILD_MODE ) {
+      return document.getElementById( id ) || this.createElement( id )
+    }
+  }
+
+  createElement( id ) {
+    let head = document.getElementsByTagName( 'head' )[0],
+      cssElement = document.getElementById( id )
+    if ( cssElement ) console.warn( "WHAT!!" )
+    console.log( `Create: ${id}` )
+
+    if ( USE_STYLE_TAGS ) {
+      cssElement = document.createElement( 'style' )
+      cssElement.setAttribute( 'id', id )
+      head.appendChild( cssElement )
+    } else {
+      cssElement = document.createElement( 'link' )
+      cssElement.setAttribute( 'id', id )
+      cssElement.setAttribute( 'rel', 'stylesheet' )
+      head.appendChild( cssElement )
     }
 
-    return id
+    return cssElement
   }
 
   triggerImport( _newPath, relativeTo, trace ) {
@@ -80,6 +91,8 @@ class CSSLoader {
     let newPath = _newPath.replace( /^["']|["']$/g, "" ),
       rootRelativePath = "." + path.resolve( path.dirname( relativeTo ), newPath )
     this._deps[relativeTo.replace( /^\//, '' )].push( `${newPath}!${this.moduleName}` )
+
+    console.log( `Imports: ${relativeTo} imports ${rootRelativePath}` )
     return System.import( `${rootRelativePath}!${this.moduleName}` ).then( exportedTokens => {
       // If we're in BUILD_MODE, the tokens aren't actually returned,
       // but they have been added into our cache.
