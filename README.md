@@ -58,7 +58,7 @@ You can customize this loader to meet your needs.
 	], __moduleName)
 	``` 
 	Just make sure you have `Plugins.autoprefixer` passed to `new CSSLoader`, it's required.
-3. If you have had `jspm-loader-css` installed with `jspm install css=npm:jspm-loader-css`, then run `jspm install npm:jspm-loader-css`, it will replace the line in `config.js`
+3. Since you have had `jspm-loader-css` installed with `jspm install css=npm:jspm-loader-css`, now open `config.js` and replace line
     
 	```
 	"css": "npm:jspm-loader-css@x.x.x"
@@ -67,8 +67,7 @@ You can customize this loader to meet your needs.
 	```
 	"jspm-loader-css": "npm:jspm-loader-css@x.x.x"
 	```
-	
-	Of course you can also edit the `config.js` file without installing jspm-loader-css again.
+    jspm will use what `css.js` exports as the default css loader.
 	
 You can also check [an example css.js file here](https://github.com/geelen/glenmaddern.com/blob/master/src/css.js "Customize your own jspm css loader").
 	
