@@ -61,17 +61,37 @@ class CSSLoader {
     }
   }
 
-  getElement( path, beforeElem ) {
+  getElement( path, beforePath ) {
     if ( !BUILD_MODE ) {
-      let id = `jspm-css-loader-${path}`
-      return document.getElementById( id ) || this.createElement( id, beforeElem )
+      let id = `jspm-css-loader-${path}`,
+        existingElem = document.getElementById( id )
+      if ( existingElem ) {
+        this.ensureBefore( existingElem, beforePath )
+        return existingElem
+      } else {
+        return this.createElement( id, beforePath )
+      }
     } else {
       let idx = this._cache.findIndex( e => e.path === path )
-      return idx >= 0 ? this._cache[idx] : this.createInCache( path, beforeElem )
+      return idx >= 0 ? this._cache[idx] : this.createInCache( path, beforePath )
     }
   }
 
-  createElement( id, beforeElem ) {
+  ensureBefore( target, beforePath ) {
+    if ( !beforePath ) return
+    let beforeElem = this.getElement( beforePath )
+
+    let parent = target.parentNode,
+      targetIdx = [].indexOf.call( parent.childNodes, target ),
+      beforeIdx = [].indexOf.call( parent.childNodes, beforeElem )
+
+    // If the target is below the beforeElem, bubble it upwards
+    if ( targetIdx > beforeIdx ) {
+      parent.insertBefore( target, beforeElem )
+    }
+  }
+
+  createElement( id, beforePath ) {
     let head = document.getElementsByTagName( 'head' )[0],
       cssElement = document.getElementById( id )
     if ( cssElement ) console.warn( "WHAT!!" )
@@ -83,15 +103,15 @@ class CSSLoader {
       cssElement.setAttribute( 'rel', 'stylesheet' )
     }
     cssElement.setAttribute( 'id', id )
-    head.insertBefore( cssElement, beforeElem ? this.getElement( beforeElem ) : null )
+    head.insertBefore( cssElement, beforePath ? this.getElement( beforePath ) : null )
 
     return cssElement
   }
 
-  createInCache( path, beforeElem ) {
+  createInCache( path, beforePath ) {
     let elem = { path }
-    if ( beforeElem ) {
-      this._cache.splice( this._cache.findIndex( e => e.path === beforeElem ), 0, elem )
+    if ( beforePath ) {
+      this._cache.splice( this._cache.findIndex( e => e.path === beforePath ), 0, elem )
     } else {
       this._cache.push( elem )
     }
