@@ -3,7 +3,7 @@ import path from 'path'
 import autoprefixer from './autoprefixer'
 
 const BUILD_MODE = typeof window === 'undefined'
-const USE_STYLE_TAGS = true || BUILD_MODE || !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match( /phantomjs/i )
+const USE_STYLE_TAGS = BUILD_MODE || !window.Blob || !window.URL || !URL.createObjectURL || navigator.userAgent.match( /phantomjs/i )
 
 class CSSLoader {
   constructor( plugins, moduleName ) {
