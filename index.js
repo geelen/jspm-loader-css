@@ -1,5 +1,7 @@
 import Core from 'css-modules-loader-core'
 import path from 'path'
+import postcss from 'postcss'
+import postcssUrl from 'postcss-url'
 import autoprefixer from './autoprefixer'
 
 const BUILD_MODE = typeof window === 'undefined'
@@ -52,12 +54,20 @@ class CSSLoader {
     } else if ( USE_STYLE_TAGS ) {
       elem.innerHTML = source
     } else {
-      let oldHref = elem.getAttribute( 'href' ),
-        blob = new Blob( [source], { type: 'text/css' } ),
-        url = URL.createObjectURL( blob )
 
-      elem.setAttribute( 'href', url )
-      if ( oldHref ) URL.revokeObjectURL( oldHref )
+      // replace relative path in url('') with absolute path
+      postcss([postcssUrl({
+        url: function(URL) {
+          return elem.baseURI + URL;
+        }
+      })]).process(source).then(function(source) {
+        let oldHref = elem.getAttribute( 'href' ),
+          blob = new Blob( [source], { type: 'text/css' } ),
+          url = URL.createObjectURL( blob )
+
+        elem.setAttribute( 'href', url )
+        if ( oldHref ) URL.revokeObjectURL( oldHref )
+      })
     }
   }
 

@@ -6,7 +6,9 @@
   "description": "A CSS loader for JSPM. Install",
   "dependencies": {
     "css-modules-loader-core": "^0.0.10",
-    "path": "^0.11.14"
+    "path": "^0.11.14",
+    "postcss": "^4.1.16",
+    "postcss-url": "^4.0.1"
   },
   "devDependencies": {},
   "scripts": {
