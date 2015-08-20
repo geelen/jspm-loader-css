@@ -16,7 +16,9 @@ class CSSLoader {
   }
 
   fetch( load, fetch ) {
-    let path = load.metadata.pluginArgument,
+    var pluginSyntaxIndex = load.name.lastIndexOf('!') || 0;
+
+    let path = load.name.substr(0, pluginSyntaxIndex),
       deps = this._deps[path] = []
     // Create the element for this file if it isn't already
     // to ensure the correct order of output
@@ -161,8 +163,13 @@ let Plugins = {
   autoprefixer
 }
 export { CSSLoader,Plugins }
-export default new CSSLoader( [
+
+const loader = new CSSLoader( [
   Plugins.extractImports,
   Plugins.scope,
   Plugins.autoprefixer()
 ] )
+export default loader
+
+const fetch = loader.fetch
+export { fetch }
