@@ -16,17 +16,17 @@ class CSSLoader {
   }
 
   fetch( load, fetch ) {
-    let path = load.metadata.pluginArgument,
-      deps = this._deps[path] = []
+    let relativePath = path.relative( System.baseURL, load.address),
+      deps = this._deps[relativePath] = []
     // Create the element for this file if it isn't already
     // to ensure the correct order of output
-    let elem = this.getElement( path )
+    let elem = this.getElement( relativePath )
     // Use the default Load to fetch the source
     return fetch( load ).then( source => {
       // Pass this to the CSS Modules core to be translated
       // triggerImport is how dependencies are resolved
       // we don't use the trace argument because we can use the dom
-      return this.core.load( source, path, "", this.triggerImport.bind( this ) )
+      return this.core.load( source, relativePath, "", this.triggerImport.bind( this ) )
     } ).then( ( { injectableSource, exportTokens } ) => {
       this.inject( injectableSource, elem )
       if ( BUILD_MODE ) {
