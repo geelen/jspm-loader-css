@@ -141,22 +141,22 @@ class CSSLoader {
 
   getDataFromPath (path) {
     return this._cache.reduce(function(found, el){
-      return found || (el.path == path && el);
-    }, null);
+      return found || (el.path == path && el)
+    }, null)
   }
 
   bundle(loads) {
-    let loader = this;
+    let loader = this
 
     let stubDefines = loads.map(function(load) {
-      let data = loader.getDataFromPath(load.address);
+      let data = loader.getDataFromPath(load.address)
 
-      return "System\.register('" + load.name + "', [], function(_export) {return {setters: [], execute: function () {_export ('default', " + JSON.stringify( data.tokens ) + "  )}}});";
-    }).join('\n');
+      return "System\.register('" + load.name + "', [], function(_export) {return {setters: [], execute: function () {_export ('default', " + JSON.stringify( data.tokens ) + "  )}}});"
+    }).join('\n')
 
-    let inject = `(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})("${this.getAllSources()}");`;
+    let inject = `(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})("${this.getAllSources()}");`
 
-    return [stubDefines, inject].join('\n');
+    return [stubDefines, inject].join('\n')
   }
 
   getAllSources() {
@@ -187,16 +187,13 @@ const loader = new CSSLoader( [
 ] )
 export default loader
 
-let fetch;
-fetch = loader.fetch;
+let fetch
+fetch = loader.fetch
 
-let bundle, translate;
+let bundle, translate
 
 if (BUILD_MODE) {
-  translate = load => {
-    load.metadata.format = 'defined';
-  };
-  bundle = loader.bundle;
+  bundle = loader.bundle
 }
 
 export {fetch, bundle}
