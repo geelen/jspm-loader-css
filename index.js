@@ -16,7 +16,9 @@ class CSSLoader {
   }
 
   fetch( load, fetch ) {
-    let path = load.metadata.pluginArgument,
+    var pluginSyntaxIndex = load.name.lastIndexOf('!') || 0;
+
+    let path = load.name.substr(0, pluginSyntaxIndex),
       deps = this._deps[path] = []
     // Create the element for this file if it isn't already
     // to ensure the correct order of output
@@ -137,8 +139,24 @@ class CSSLoader {
     } )
   }
 
-  bundle() {
-    return `(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})("${this.getAllSources()}");`
+  getDataFromPath (path) {
+    return this._cache.reduce(function(found, el){
+      return found || (el.path == path && el)
+    }, null)
+  }
+
+  bundle(loads) {
+    let loader = this
+
+    let stubDefines = loads.map(function(load) {
+      let data = loader.getDataFromPath(load.address)
+
+      return "System\.register('" + load.name + "', [], function(_export) {return {setters: [], execute: function () {_export ('default', " + JSON.stringify( data.tokens ) + "  )}}});"
+    }).join('\n')
+
+    let inject = `(function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})("${this.getAllSources()}");`
+
+    return [stubDefines, inject].join('\n')
   }
 
   getAllSources() {
@@ -161,8 +179,21 @@ let Plugins = {
   autoprefixer
 }
 export { CSSLoader,Plugins }
-export default new CSSLoader( [
+
+const loader = new CSSLoader( [
   Plugins.extractImports,
   Plugins.scope,
   Plugins.autoprefixer()
 ] )
+export default loader
+
+let fetch
+fetch = loader.fetch
+
+let bundle, translate
+
+if (BUILD_MODE) {
+  bundle = loader.bundle
+}
+
+export {fetch, bundle}
