@@ -5,8 +5,10 @@
   "version": "0.1.6",
   "description": "A CSS loader for JSPM. Install",
   "dependencies": {
-    "css-modules-loader-core": "^0.0.10",
-    "path": "^0.11.14"
+    "css-modules-loader-core": "^0.0.12",
+    "debounce": "^1.0.0",
+    "path": "^0.12.7",
+    "toposort": "^0.2.12"
   },
   "devDependencies": {},
   "scripts": {
