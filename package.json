@@ -1,8 +1,8 @@
 {
-  "name": "jspm-loader-css",
+  "name": "@douglasduteil/jspm-loader-css-next",
   "main": "index",
   "format": "es6",
-  "version": "0.1.6",
+  "version": "1.0.0",
   "description": "A CSS loader for JSPM. Install",
   "dependencies": {
     "css-modules-loader-core": "^0.0.12",
