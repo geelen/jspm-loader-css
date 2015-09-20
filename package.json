@@ -1,5 +1,5 @@
 {
-  "name": "@douglasduteil/jspm-loader-css-next",
+  "name": "douglasduteil-jspm-loader-css",
   "main": "index",
   "format": "es6",
   "version": "1.0.0",
