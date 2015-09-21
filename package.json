@@ -1,8 +1,8 @@
 {
-  "name": "douglasduteil-jspm-loader-css",
+  "name": "jspm-loader-css",
   "main": "index",
   "format": "es6",
-  "version": "1.0.1",
+  "version": "0.1.6",
   "description": "A CSS loader for JSPM. Install",
   "dependencies": {
     "css-modules-loader-core": "^0.0.12",
