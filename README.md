@@ -41,6 +41,32 @@ For the full CSS Modules syntax, where everything is local by default, see the [
 
 The loader also supports the CSS Modules Interchange Format. 
 
+## Import path notation
+
+The path you specify will be processed through SystemJS with your [configuration](https://github.com/systemjs/systemjs/blob/master/docs/config-api.md).  
+For example, with the configuration below :
+
+```js
+// Your config.js
+System.config({
+  paths: {
+    "github:*": "jspm_packages/github/*",
+    "~/*": "somewhere/*"
+  }
+}
+```
+
+You can write various import paths:
+
+```css
+/* Your ike.icss */
+.ike {
+  composes: bounce animated from "https://github.jspm.io/daneden/animate.css@3.1.0/animate.css";
+  composes: bounce animated from "github:daneden/animate.css@3.1.0/animate.css";
+  composes: bounce animated from "~/animate.css";
+}
+```
+
 ## Customize your own loader
 
 You can customize this loader to meet your needs.
