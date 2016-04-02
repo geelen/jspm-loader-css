@@ -43,6 +43,20 @@ For the full CSS Modules syntax, where everything is local by default, see the [
 
 The loader also supports the CSS Modules Interchange Format. 
 
+## Builder Support
+
+When building with [SystemJS Builder](https://github.com/systemjs/builder), by default CSS will be inlined into the JS bundle and injected on execution.
+
+To alter this behaviour use the SystemJS configuration options:
+
+* `separateCSS`: true / false whether to build a CSS file at the same output name as the bundle itself to be included with a link tag. Defaults to false.
+* `buildCSS`: true / false whether to bundle CSS files or leave as separate requests. Defaults to true.
+* `rootURL`: Optional, address that when set normalizes all CSS URLs to be absolute relative to this path.
+
+## Source Maps
+
+CSS source maps are supported when using the `separateCSS` output option.
+
 ## Import path notation
 
 The path you specify will be processed through SystemJS with your [configuration](https://github.com/systemjs/systemjs/blob/master/docs/config-api.md).  
